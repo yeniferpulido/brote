@@ -56,7 +56,7 @@ data class Meta(
         get() = recursoFlorPorTipo(florTipo)
 }
 
-// Modelo de flor desbloqueada en el jardín
+// Modelo de flor desbloqueada en el jardín con el nombre de la meta asociada
 data class FlorDesbloqueada(
     val id: Long,
     val metaId: Long,
@@ -64,7 +64,8 @@ data class FlorDesbloqueada(
     val florResId: Int = recursoFlorPorTipo(florTipo),
     val pagina: Int,
     val parcela: Int,
-    val fechaDesbloqueo: Long = System.currentTimeMillis()
+    val fechaDesbloqueo: Long = System.currentTimeMillis(),
+    val metaNombre: String = ""
 )
 
 // Representación de una parcela con coordenadas normalizadas (0f..1f)
@@ -78,14 +79,14 @@ data class ParcelaPosicion(
 // Número de parcelas por página de jardín (cuadrícula 3 x 4)
 const val PARCELAS_POR_PAGINA = 12
 
-// Parcelas ubicadas en el lecho central de tierra fértil de fondojardin.jpg
-// x va de ~0.24 a ~0.76 (dentro del ancho 602 px)
-// y va de ~0.33 a ~0.78 (dentro del alto 1200 px)
+// Parcelas ubicadas en el lecho central de tierra fértil de fondojardin
+// Las filas se elevaron ligeramente (y = 0.28, 0.42, 0.56, 0.70)
+// para respetar el espacio café sin acercarse demasiado a la hierba inferior.
 val PARCELAS_JARDIN: List<ParcelaPosicion> = run {
     val columnas = 3
     val filas = 4
     val xCoords = listOf(0.24f, 0.50f, 0.76f)
-    val yCoords = listOf(0.33f, 0.48f, 0.63f, 0.78f)
+    val yCoords = listOf(0.28f, 0.42f, 0.56f, 0.70f)
     val lista = mutableListOf<ParcelaPosicion>()
     var id = 0
     for (row in 0 until filas) {

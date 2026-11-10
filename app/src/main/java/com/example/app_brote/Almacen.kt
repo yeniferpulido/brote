@@ -57,6 +57,7 @@ class Almacen(context: Context) {
             obj.put("pagina", f.pagina)
             obj.put("parcela", f.parcela)
             obj.put("fechaDesbloqueo", f.fechaDesbloqueo)
+            obj.put("metaNombre", f.metaNombre)
             array.put(obj)
         }
         prefs.edit().putString("flores", array.toString()).apply()
@@ -78,7 +79,8 @@ class Almacen(context: Context) {
                     florResId = recursoFlorPorTipo(florTipo),
                     pagina = obj.getInt("pagina"),
                     parcela = obj.getInt("parcela"),
-                    fechaDesbloqueo = obj.optLong("fechaDesbloqueo", System.currentTimeMillis())
+                    fechaDesbloqueo = obj.optLong("fechaDesbloqueo", System.currentTimeMillis()),
+                    metaNombre = obj.optString("metaNombre", "")
                 )
             )
         }

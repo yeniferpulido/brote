@@ -1,54 +1,75 @@
 package com.example.app_brote.ui.theme
 
-import android.app.Activity
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
-
-private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
-)
+import androidx.compose.ui.graphics.Color
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
+    primary = VerdeBosquePrimario,
+    onPrimary = TextoInvertido,
+    primaryContainer = VerdeMentaMuySuave,
+    onPrimaryContainer = TextoPrimario,
 
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    secondary = VerdeHojaSecundario,
+    onSecondary = TextoInvertido,
+    secondaryContainer = SuperficieContenedor,
+    onSecondaryContainer = TextoPrimario,
+
+    tertiary = DoradoAcento,
+    onTertiary = TextoInvertido,
+    tertiaryContainer = CremaTierra,
+    onTertiaryContainer = TextoPrimario,
+
+    background = FondoPantalla,
+    onBackground = TextoPrimario,
+
+    surface = SuperficieTarjeta,
+    onSurface = TextoPrimario,
+    surfaceVariant = SuperficieContenedor,
+    onSurfaceVariant = TextoSecundario,
+
+    outline = BordeDelicado,
+    error = EstadoError,
+    onError = Color.White
+)
+
+private val DarkColorScheme = darkColorScheme(
+    primary = VerdeMentaMarca,
+    onPrimary = TextoPrimario,
+    primaryContainer = VerdeBosquePrimario,
+    onPrimaryContainer = Color.White,
+
+    secondary = VerdeMentaClaro,
+    onSecondary = TextoPrimario,
+    secondaryContainer = Color(0xFF1B3C2B),
+    onSecondaryContainer = Color.White,
+
+    tertiary = DoradoAcento,
+    onTertiary = TextoPrimario,
+
+    background = Color(0xFF0F1E16),
+    onBackground = Color(0xFFE5F2EA),
+
+    surface = Color(0xFF172B20),
+    onSurface = Color(0xFFE5F2EA),
+    surfaceVariant = Color(0xFF1F382B),
+    onSurfaceVariant = Color(0xFF9EBFAC),
+
+    outline = Color(0xFF2C4A3A),
+    error = Color(0xFFFFB4AB),
+    onError = Color(0xFF690005)
 )
 
 @Composable
 fun App_BroteTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false, // Desactivado para mantener la identidad visual de fondoinicio
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
+    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
 
     MaterialTheme(
         colorScheme = colorScheme,

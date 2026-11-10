@@ -26,7 +26,18 @@ class MetasViewModel(app: Application) : AndroidViewModel(app) {
 
     init {
         metas.addAll(almacen.cargar())
-        flores.addAll(almacen.cargarFlores())
+        val cargadas = almacen.cargarFlores()
+
+        // Sincronizar nombres de metas para flores cargadas si vinieran vacías
+        val floresActualizadas = cargadas.map { f ->
+            if (f.metaNombre.isEmpty()) {
+                val nombre = metas.find { it.id == f.metaId }?.nombre ?: "Flor lograda"
+                f.copy(metaNombre = nombre)
+            } else {
+                f
+            }
+        }
+        flores.addAll(floresActualizadas)
         verificarDesbloqueosAutomaticos()
     }
 
@@ -58,9 +69,14 @@ class MetasViewModel(app: Application) : AndroidViewModel(app) {
         val posicion = metas.indexOfFirst { it.id == id }
         if (posicion >= 0) {
             val meta = metas[posicion]
-            metas[posicion] = meta.copy(ahorrado = meta.ahorrado + monto)
-            almacen.guardar(metas)
-            verificarDesbloqueosAutomaticos()
+            // Regla estricta: No se puede exceder lo pactado en la meta
+            val montoMaximo = meta.restante
+            val montoReal = minOf(monto, montoMaximo)
+            if (montoReal > 0) {
+                metas[posicion] = meta.copy(ahorrado = meta.ahorrado + montoReal)
+                almacen.guardar(metas)
+                verificarDesbloqueosAutomaticos()
+            }
         }
     }
 
@@ -104,7 +120,8 @@ class MetasViewModel(app: Application) : AndroidViewModel(app) {
                     florResId = recursoFlorPorTipo(meta.florTipo),
                     pagina = paginaLibre,
                     parcela = parcelaLibre,
-                    fechaDesbloqueo = System.currentTimeMillis()
+                    fechaDesbloqueo = System.currentTimeMillis(),
+                    metaNombre = meta.nombre
                 )
 
                 flores.add(nuevaFlor)
