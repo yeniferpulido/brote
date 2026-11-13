@@ -392,57 +392,130 @@ fun PantallaInicio(
     }
 }
 
-// Lista de metas activas
+// Lista de metas activas con el mismo fondo de inicio
 @Composable
 fun PantallaMetas(vm: MetasViewModel) {
     val activas = vm.metas.filter { !it.completada }
     var metaParaAporte by remember { mutableStateOf<Meta?>(null) }
 
-    if (activas.isEmpty()) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(24.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Surface(
-                shape = RoundedCornerShape(20.dp),
-                color = MaterialTheme.colorScheme.surface,
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-                shadowElevation = 2.dp,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(
-                    modifier = Modifier.padding(24.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = "Aún no tienes metas activas",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "Toca el botón + para comenzar a ahorrar y ver crecer tu primera planta.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.Center
-                    )
-                }
-            }
+    BoxWithConstraints(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        val availableWidth = maxWidth
+        val availableHeight = maxHeight
+
+        val imageAspectRatio = 606f / 1200f
+        val containerAspectRatio = availableWidth / availableHeight
+
+        val (contentWidth, contentHeight) = if (containerAspectRatio > imageAspectRatio) {
+            (availableHeight * imageAspectRatio) to availableHeight
+        } else {
+            availableWidth to (availableWidth / imageAspectRatio)
         }
-    } else {
-        LazyColumn(
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp)
+
+        Box(
+            modifier = Modifier.size(contentWidth, contentHeight)
         ) {
-            items(activas, key = { it.id }) { meta ->
-                TarjetaMeta(
-                    meta = meta,
-                    onAportar = { metaParaAporte = meta },
-                    onEliminar = { vm.eliminarMeta(meta.id) }
-                )
+            // Mismo fondo de la pantalla de inicio
+            Image(
+                bitmap = ImageBitmap.imageResource(id = R.drawable.fondoinicio),
+                contentDescription = "Fondo de Metas",
+                contentScale = ContentScale.Fit,
+                filterQuality = FilterQuality.None,
+                modifier = Modifier.fillMaxSize()
+            )
+
+            // Contenedor de contenido dentro de la zona central de la ilustración
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(
+                        top = contentHeight * 0.16f,
+                        bottom = contentHeight * 0.12f,
+                        start = 18.dp,
+                        end = 18.dp
+                    )
+            ) {
+                // Título de la sección
+                Surface(
+                    shape = RoundedCornerShape(18.dp),
+                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.92f),
+                    shadowElevation = 3.dp,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column {
+                            Text(
+                                text = "Mis Metas",
+                                style = MaterialTheme.typography.titleLarge,
+                                color = MaterialTheme.colorScheme.primary,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = if (activas.isEmpty()) "Sin metas en curso" else "${activas.size} en crecimiento",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                if (activas.isEmpty()) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Surface(
+                            shape = RoundedCornerShape(20.dp),
+                            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.94f),
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                            shadowElevation = 3.dp,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(24.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    text = "Aún no tienes metas activas",
+                                    style = MaterialTheme.typography.titleLarge,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    text = "Toca el botón + para comenzar a ahorrar y ver crecer tu primera planta.",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                        }
+                    }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        items(activas, key = { it.id }) { meta ->
+                            TarjetaMeta(
+                                meta = meta,
+                                onAportar = { metaParaAporte = meta },
+                                onEliminar = { vm.eliminarMeta(meta.id) }
+                            )
+                        }
+                    }
+                }
             }
         }
     }
