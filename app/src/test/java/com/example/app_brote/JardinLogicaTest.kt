@@ -106,4 +106,23 @@ class JardinLogicaTest {
         assertEquals(1, flores.size)
         assertEquals(100L, flores[0].metaId)
     }
+
+    @Test
+    fun testFormatoValoresNumericosConPuntos() {
+        assertEquals("$0", dinero(0.0))
+        assertEquals("$100", dinero(100.0))
+        assertEquals("$1.000", dinero(1000.0))
+        assertEquals("$15.000", dinero(15000.0))
+        assertEquals("$250.000", dinero(250000.0))
+        assertEquals("$2.000.000", dinero(2000000.0))
+
+        assertEquals("1.000", formatearNumero(1000.0))
+        assertEquals("50.000", formatearNumero(50000.0))
+        assertEquals("1.500.000", formatearNumero(1500000.0))
+
+        assertEquals(1000.0, limpiarMonto("1.000"))
+        assertEquals(250000.0, limpiarMonto("250.000"))
+        assertEquals(2000000.0, limpiarMonto("$2.000.000"))
+    }
 }
+

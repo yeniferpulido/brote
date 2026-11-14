@@ -26,12 +26,15 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.imageResource
+import androidx.compose.foundation.border
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import com.example.app_brote.ui.theme.AcentoAmbarBrote
 import com.example.app_brote.ui.theme.App_BroteTheme
 
 class MainActivity : ComponentActivity() {
@@ -118,11 +121,20 @@ fun PantallaPrincipal(vm: MetasViewModel) {
             if (pestana == 1) {
                 FloatingActionButton(
                     onClick = { mostrarCrear = true },
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
-                    shape = CircleShape
+                    containerColor = AcentoAmbarBrote,
+                    contentColor = Color.White,
+                    shape = CircleShape,
+                    elevation = FloatingActionButtonDefaults.elevation(
+                        defaultElevation = 8.dp,
+                        pressedElevation = 12.dp
+                    ),
+                    modifier = Modifier.border(
+                        width = 2.dp,
+                        color = Color.White.copy(alpha = 0.90f),
+                        shape = CircleShape
+                    )
                 ) {
-                    Text("+", fontSize = 28.sp, fontWeight = FontWeight.Bold)
+                    Text("+", fontSize = 30.sp, fontWeight = FontWeight.Bold)
                 }
             }
         }
@@ -357,33 +369,53 @@ fun PantallaInicio(
                     }
                 }
 
-                // Botones de acción rápida
+                // Botones de acción rápida con alto contraste sobre la ilustración
                 Column(
                     modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     Button(
                         onClick = onIrAMetas,
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(14.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(52.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = AcentoAmbarBrote,
+                            contentColor = Color.White
+                        ),
+                        elevation = ButtonDefaults.buttonElevation(
+                            defaultElevation = 6.dp,
+                            pressedElevation = 10.dp
+                        )
                     ) {
-                        Text("Ver mis metas 🎯", style = MaterialTheme.typography.labelLarge)
+                        Text(
+                            text = "Ver mis metas 🎯",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
                     }
 
-                    OutlinedButton(
+                    Button(
                         onClick = onIrAJardin,
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(14.dp),
-                        colors = ButtonDefaults.outlinedButtonColors(
-                            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.90f)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(52.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f),
+                            contentColor = MaterialTheme.colorScheme.primary
                         ),
-                        border = BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary)
+                        border = BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary),
+                        elevation = ButtonDefaults.buttonElevation(
+                            defaultElevation = 4.dp,
+                            pressedElevation = 8.dp
+                        )
                     ) {
                         Text(
                             text = "Explorar mi jardín 🌸",
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.primary
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
                         )
                     }
                 }
@@ -936,12 +968,17 @@ fun DialogoCrearMeta(onCerrar: () -> Unit, onCrear: (String, Double) -> Unit) {
                 Spacer(modifier = Modifier.height(12.dp))
                 OutlinedTextField(
                     value = objetivo,
-                    onValueChange = {
-                        objetivo = it
+                    onValueChange = { input ->
+                        val digitos = input.filter { it.isDigit() }
+                        objetivo = if (digitos.isNotEmpty()) {
+                            formatearNumero(digitos.toDouble())
+                        } else {
+                            ""
+                        }
                         if (error.isNotEmpty()) error = ""
                     },
                     label = { Text("Monto objetivo") },
-                    placeholder = { Text("Ej: 1000") },
+                    placeholder = { Text("Ej: 100.000") },
                     prefix = { Text("$ ") },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -968,7 +1005,7 @@ fun DialogoCrearMeta(onCerrar: () -> Unit, onCrear: (String, Double) -> Unit) {
         confirmButton = {
             Button(
                 onClick = {
-                    val monto = objetivo.toDoubleOrNull()
+                    val monto = limpiarMonto(objetivo)
                     if (nombre.isBlank()) {
                         error = "Escribe un nombre para tu meta"
                     } else if (monto == null || monto <= 0) {
@@ -1062,24 +1099,24 @@ fun DialogoAporte(meta: Meta, onCerrar: () -> Unit, onGuardar: (Double) -> Unit)
                     if (meta.restante > 100) {
                         SuggestionChip(
                             onClick = {
-                                texto = "100"
+                                texto = formatearNumero(100.0)
                                 error = ""
                             },
-                            label = { Text("+$100") }
+                            label = { Text("+${dinero(100.0)}") }
                         )
                     }
                     if (meta.restante > 500) {
                         SuggestionChip(
                             onClick = {
-                                texto = "500"
+                                texto = formatearNumero(500.0)
                                 error = ""
                             },
-                            label = { Text("+$500") }
+                            label = { Text("+${dinero(500.0)}") }
                         )
                     }
                     SuggestionChip(
                         onClick = {
-                            texto = meta.restante.toLong().toString()
+                            texto = formatearNumero(meta.restante)
                             error = ""
                         },
                         label = { Text("Completar (${dinero(meta.restante)})") },
@@ -1093,9 +1130,14 @@ fun DialogoAporte(meta: Meta, onCerrar: () -> Unit, onGuardar: (Double) -> Unit)
 
                 OutlinedTextField(
                     value = texto,
-                    onValueChange = {
-                        texto = it
-                        val valor = it.toDoubleOrNull()
+                    onValueChange = { input ->
+                        val digitos = input.filter { it.isDigit() }
+                        texto = if (digitos.isNotEmpty()) {
+                            formatearNumero(digitos.toDouble())
+                        } else {
+                            ""
+                        }
+                        val valor = limpiarMonto(texto)
                         error = when {
                             valor != null && valor > meta.restante ->
                                 "No puedes exceder lo pactado. El máximo permitido es ${dinero(meta.restante)}."
@@ -1134,7 +1176,7 @@ fun DialogoAporte(meta: Meta, onCerrar: () -> Unit, onGuardar: (Double) -> Unit)
         confirmButton = {
             Button(
                 onClick = {
-                    val monto = texto.toDoubleOrNull()
+                    val monto = limpiarMonto(texto)
                     when {
                         monto == null || monto <= 0 -> {
                             error = "Escribe un valor mayor a 0"

@@ -10,6 +10,7 @@ val VerdeMentaClaro = Color(0xFFAFE4CB)        // Contenedores y chips suaves
 val VerdeMentaMuySuave = Color(0xFFD4EDE0)     // Fondos sutiles de superficies
 
 val DoradoAcento = Color(0xFFD4A338)           // Dorado cálido del montículo y brote
+val AcentoAmbarBrote = Color(0xFFC8761A)       // Ámbar cálido de alto contraste (resalta sobre fondos verdes)
 val CremaTierra = Color(0xFFF3EDCE)            // Arena/crema del suelo ilustrado
 
 // Fondos y superficies: se sustituye el blanco por el verde menta orgánico del fondo

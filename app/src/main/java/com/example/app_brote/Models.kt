@@ -105,5 +105,26 @@ fun plantaPara(progreso: Float): String = when {
     else -> "🌱"
 }
 
-// Convierte 1500.0 en "$1500"
-fun dinero(valor: Double): String = "\$" + valor.toLong()
+// Formateador con puntos para separar miles y unidades (ej: 1000 -> 1.000, 2500000 -> 2.500.000)
+private val formatoMiles: java.text.DecimalFormat by lazy {
+    val symbols = java.text.DecimalFormatSymbols(java.util.Locale.forLanguageTag("es-CO")).apply {
+        groupingSeparator = '.'
+        decimalSeparator = ','
+    }
+    java.text.DecimalFormat("#,##0", symbols)
+}
+
+// Formatea un número agregando puntos de separación de miles (ej: 1000 -> "1.000")
+fun formatearNumero(valor: Double): String {
+    return formatoMiles.format(valor.toLong())
+}
+
+// Limpia una cadena formateada con puntos, comas o signos y extrae su valor numérico
+fun limpiarMonto(input: String): Double? {
+    val digitos = input.filter { it.isDigit() }
+    return digitos.toDoubleOrNull()
+}
+
+// Convierte 1500.0 en "$1.500"
+fun dinero(valor: Double): String = "$" + formatearNumero(valor)
+
